@@ -7,6 +7,12 @@ import (
 )
 
 func main() {
+
+	// Инициализация базы данных
+	initDB()
+	seedClubs()
+	defer db.Close()
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
