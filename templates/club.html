@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>КПЛ Аналитика — {{.Name}}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>КПЛ Аналитика</h1>
+      <nav>
+        <a href="/">Главная</a>
+        <a href="/table">Таблица</a>
+        <a href="/clubs">Клубы</a>
+        <a href="/news">Новости</a>
+      </nav>
+    </header>
+
+    <main>
+      <a href="/clubs" class="back-link">← Назад к клубам</a>
+      <h2>{{.Name}}</h2>
+
+      <div class="club-info">
+        <div class="info-row"><span>Город:</span> {{.City}}</div>
+        <div class="info-row"><span>Стадион:</span> {{.Stadium}}</div>
+        <div class="info-row"><span>Сыграно матчей:</span> {{.Played}}</div>
+        <div class="info-row"><span>Победы:</span> {{.Wins}}</div>
+        <div class="info-row"><span>Ничьи:</span> {{.Draws}}</div>
+        <div class="info-row"><span>Поражения:</span> {{.Losses}}</div>
+        <div class="info-row"><span>Забито мячей:</span> {{.GoalsFor}}</div>
+        <div class="info-row"><span>Пропущено мячей:</span> {{.GoalsAg}}</div>
+        <div class="info-row points-row"><span>Очки:</span> {{.Points}}</div>
+      </div>
+    </main>
+
+    <footer>
+      <p>Проект для колледжа · 2026</p>
+    </footer>
+  </body>
+</html>

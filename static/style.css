@@ -106,3 +106,84 @@ footer {
     font-weight: bold;
     color: #4ade80;
 }
+
+/* Сетка карточек клубов */
+.clubs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.club-card {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-decoration: none;
+    color: #e6edf3;
+    transition: transform 0.15s, border-color 0.15s;
+}
+
+.club-card:hover {
+    transform: translateY(-4px);
+    border-color: #4ade80;
+}
+
+.club-card h3 {
+    color: #4ade80;
+    margin-bottom: 8px;
+}
+
+.club-card p {
+    color: #8b949e;
+    margin-bottom: 12px;
+}
+
+.club-points {
+    display: inline-block;
+    background-color: #15803d;
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Страница одного клуба */
+.back-link {
+    display: inline-block;
+    color: #4ade80;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.club-info {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 16px;
+}
+
+.info-row {
+    padding: 10px 0;
+    border-bottom: 1px solid #30363d;
+}
+
+.info-row span {
+    color: #8b949e;
+    display: inline-block;
+    width: 200px;
+}
+
+.info-row.points-row {
+    border-bottom: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #4ade80;
+}

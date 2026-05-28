@@ -34,7 +34,6 @@ func initDB() {
 		return
 	}
 
-	// SQL-команда: создать таблицу clubs, если она ещё не существует
 	createTable := `
 	CREATE TABLE IF NOT EXISTS clubs (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -77,4 +76,14 @@ func getClubs() ([]Club, error) {
 		clubs = append(clubs, c)
 	}
 	return clubs, nil
+}
+
+// getClubByID возвращает один клуб по его id
+func getClubByID(id int) (Club, error) {
+	var c Club
+	err := db.QueryRow(
+		"SELECT id, name, city, stadium, played, wins, draws, losses, goals_for, goals_against, points FROM clubs WHERE id = ?",
+		id,
+	).Scan(&c.ID, &c.Name, &c.City, &c.Stadium, &c.Played, &c.Wins, &c.Draws, &c.Losses, &c.GoalsFor, &c.GoalsAg, &c.Points)
+	return c, err
 }
