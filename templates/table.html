@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>КПЛ Аналитика — Таблица</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>КПЛ Аналитика</h1>
+      <nav>
+        <a href="/">Главная</a>
+        <a href="/table">Таблица</a>
+        <a href="/clubs">Клубы</a>
+        <a href="/news">Новости</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>Турнирная таблица</h2>
+      <table class="standings">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th class="team-col">Клуб</th>
+            <th>И</th>
+            <th>В</th>
+            <th>Н</th>
+            <th>П</th>
+            <th>ЗМ</th>
+            <th>ПМ</th>
+            <th>РМ</th>
+            <th>О</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range $index, $club := .}}
+          <tr>
+            <td>{{add $index 1}}</td>
+            <td class="team-col">{{$club.Name}}</td>
+            <td>{{$club.Played}}</td>
+            <td>{{$club.Wins}}</td>
+            <td>{{$club.Draws}}</td>
+            <td>{{$club.Losses}}</td>
+            <td>{{$club.GoalsFor}}</td>
+            <td>{{$club.GoalsAg}}</td>
+            <td>{{sub $club.GoalsFor $club.GoalsAg}}</td>
+            <td class="points">{{$club.Points}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </main>
+
+    <footer>
+      <p>Проект для колледжа · 2026</p>
+    </footer>
+  </body>
+</html>

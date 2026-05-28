@@ -7,12 +7,12 @@ import (
 )
 
 func main() {
-
 	// Инициализация базы данных
 	initDB()
 	seedClubs()
 	defer db.Close()
 
+	// Главная страница
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
@@ -21,6 +21,34 @@ func main() {
 			return
 		}
 		tmpl.Execute(w, nil)
+	})
+
+	// Страница турнирной таблицы
+	http.HandleFunc("/table", func(w http.ResponseWriter, r *http.Request) {
+		// Берём клубы из базы
+		clubs, err := getClubs()
+		if err != nil {
+			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
+			fmt.Println("Ошибка getClubs:", err)
+			return
+		}
+
+		// Вспомогательные функции для шаблона (сложение и вычитание)
+		funcMap := template.FuncMap{
+			"add": func(a, b int) int { return a + b },
+			"sub": func(a, b int) int { return a - b },
+		}
+
+		// Загружаем шаблон с этими функциями
+		tmpl, err := template.New("table.html").Funcs(funcMap).ParseFiles("templates/table.html")
+		if err != nil {
+			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
+			fmt.Println("Ошибка шаблона:", err)
+			return
+		}
+
+		// Передаём клубы в шаблон
+		tmpl.Execute(w, clubs)
 	})
 
 	// Раздаём статические файлы (CSS, картинки) из папки static

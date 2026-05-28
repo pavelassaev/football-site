@@ -64,3 +64,45 @@ footer {
     color: #8b949e;
     border-top: 1px solid #30363d;
 }
+
+/* Турнирная таблица */
+.standings {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #161b22;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.standings thead {
+    background-color: #15803d;
+}
+
+.standings th {
+    padding: 12px 8px;
+    text-align: center;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.standings td {
+    padding: 12px 8px;
+    text-align: center;
+    border-bottom: 1px solid #30363d;
+    font-size: 14px;
+}
+
+.standings .team-col {
+    text-align: left;
+    font-weight: 500;
+}
+
+.standings tbody tr:hover {
+    background-color: #1f2937;
+}
+
+.standings .points {
+    font-weight: bold;
+    color: #4ade80;
+}
