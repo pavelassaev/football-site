@@ -11,6 +11,7 @@ func main() {
 	// Инициализация базы данных
 	initDB()
 	seedClubs()
+	seedNews()
 	defer db.Close()
 
 	// Главная страница
@@ -87,6 +88,48 @@ func main() {
 			return
 		}
 		tmpl.Execute(w, club)
+	})
+
+	// Страница со списком новостей
+	http.HandleFunc("/news", func(w http.ResponseWriter, r *http.Request) {
+		newsList, err := getNews()
+		if err != nil {
+			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
+			fmt.Println("Ошибка getNews:", err)
+			return
+		}
+		tmpl, err := template.ParseFiles("templates/news.html")
+		if err != nil {
+			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
+			fmt.Println("Ошибка шаблона:", err)
+			return
+		}
+		tmpl.Execute(w, newsList)
+	})
+
+	// Страница одной новости
+	http.HandleFunc("/article", func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			http.Error(w, "Неверный id новости", http.StatusBadRequest)
+			return
+		}
+
+		article, err := getNewsByID(id)
+		if err != nil {
+			http.Error(w, "Новость не найдена", http.StatusNotFound)
+			fmt.Println("Ошибка getNewsByID:", err)
+			return
+		}
+
+		tmpl, err := template.ParseFiles("templates/article.html")
+		if err != nil {
+			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
+			fmt.Println("Ошибка шаблона:", err)
+			return
+		}
+		tmpl.Execute(w, article)
 	})
 
 	// Раздаём статические файлы (CSS, картинки) из папки static

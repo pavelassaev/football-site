@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>КПЛ Аналитика — Новости</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>КПЛ Аналитика</h1>
+      <nav>
+        <a href="/">Главная</a>
+        <a href="/table">Таблица</a>
+        <a href="/clubs">Клубы</a>
+        <a href="/news">Новости</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>Новости лиги</h2>
+      <div class="news-list">
+        {{range .}}
+        <a href="/article?id={{.ID}}" class="news-card">
+          <span class="news-date">{{.Date}}</span>
+          <h3>{{.Title}}</h3>
+        </a>
+        {{end}}
+      </div>
+    </main>
+
+    <footer>
+      <p>Проект для колледжа · 2026</p>
+    </footer>
+  </body>
+</html>
