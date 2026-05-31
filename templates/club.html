@@ -6,19 +6,19 @@
     <title>КПЛ Аналитика — {{.Name}}</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
-  <body>
+  <body class="page-clubs">
     <header>
-      <h1>КПЛ Аналитика</h1>
+      <h1>⚽ КПЛ Аналитика</h1>
       <nav>
-        <a href="/">Главная</a>
-        <a href="/table">Таблица</a>
-        <a href="/clubs">Клубы</a>
-        <a href="/news">Новости</a>
+        <a href="/" class="nav-home">Главная</a>
+        <a href="/table" class="nav-table">Таблица</a>
+        <a href="/clubs" class="nav-clubs">Клубы</a>
+        <a href="/news" class="nav-news">Новости</a>
       </nav>
     </header>
 
     <main>
-      <a href="/clubs" class="back-link">← Назад к клубам</a>
+      <button onclick="history.back()" class="btn btn-back">← Назад</button>
       <h2>{{.Name}}</h2>
 
       <div class="club-info">
@@ -35,7 +35,7 @@
     </main>
 
     <footer>
-      <p>Проект для колледжа · 2026</p>
+      <p>КПЛ Аналитика · 2026</p>
     </footer>
   </body>
 </html>

@@ -12,30 +12,58 @@ body {
     line-height: 1.6;
 }
 
-/* Шапка сайта */
+/* Шапка сайта — название и меню в одну линию */
 header {
     background-color: #15803d;
-    padding: 20px 40px;
+    padding: 18px 40px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 header h1 {
-    font-size: 28px;
-    margin-bottom: 12px;
+    font-size: 26px;
     color: #ffffff;
+    margin: 0;
 }
 
 /* Меню навигации */
+nav {
+    display: flex;
+    gap: 24px;
+}
+
 nav a {
     color: #ffffff;
     text-decoration: none;
-    margin-right: 24px;
     font-weight: 500;
+    padding: 4px 0;
     transition: opacity 0.2s;
 }
 
 nav a:hover {
     opacity: 0.7;
+}
+
+/* Подсветка активной страницы в меню */
+.page-home .nav-home,
+.page-table .nav-table,
+.page-clubs .nav-clubs,
+.page-news .nav-news {
+    border-bottom: 2px solid #ffffff;
+    font-weight: bold;
+    opacity: 1;
+    cursor: default;
+}
+
+.page-home .nav-home:hover,
+.page-table .nav-table:hover,
+.page-clubs .nav-clubs:hover,
+.page-news .nav-news:hover {
+    opacity: 1;
 }
 
 /* Основной контент */
@@ -63,6 +91,114 @@ footer {
     margin-top: 60px;
     color: #8b949e;
     border-top: 1px solid #30363d;
+}
+
+/* Зелёная кнопка (универсальная) */
+.btn {
+    display: inline-block;
+    background-color: #15803d;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.15s;
+}
+
+.btn:hover {
+    background-color: #16a34a;
+}
+
+/* Кнопка "Назад" */
+.btn-back {
+    margin-bottom: 20px;
+}
+
+/* Главная страница */
+.hero {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+    border-radius: 12px;
+    margin-bottom: 32px;
+}
+
+.hero h2 {
+    color: #ffffff;
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: #d1fae5;
+    font-size: 16px;
+    margin-bottom: 0;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.home-block {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.home-block h3 {
+    color: #4ade80;
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+.top-clubs, .latest-news {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.top-club-row, .latest-news-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background-color: #0d1117;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #e6edf3;
+    transition: background-color 0.15s;
+}
+
+.top-club-row:hover, .latest-news-row:hover {
+    background-color: #1f2937;
+}
+
+.top-club-name {
+    font-weight: 500;
+}
+
+.top-club-points {
+    color: #4ade80;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.latest-news-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.latest-news-title {
+    font-size: 14px;
 }
 
 /* Турнирная таблица */
@@ -151,17 +287,6 @@ footer {
 }
 
 /* Страница одного клуба */
-.back-link {
-    display: inline-block;
-    color: #4ade80;
-    text-decoration: none;
-    margin-bottom: 20px;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
-
 .club-info {
     background-color: #161b22;
     border: 1px solid #30363d;

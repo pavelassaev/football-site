@@ -6,28 +6,57 @@
     <title>КПЛ Аналитика — Главная</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
-  <body>
+  <body class="page-home">
     <header>
-      <h1>КПЛ Аналитика</h1>
+      <h1>⚽ КПЛ Аналитика</h1>
       <nav>
-        <a href="/">Главная</a>
-        <a href="/table">Таблица</a>
-        <a href="/clubs">Клубы</a>
-        <a href="/news">Новости</a>
+        <a href="/" class="nav-home">Главная</a>
+        <a href="/table" class="nav-table">Таблица</a>
+        <a href="/clubs" class="nav-clubs">Клубы</a>
+        <a href="/news" class="nav-news">Новости</a>
       </nav>
     </header>
 
     <main>
-      <h2>Добро пожаловать!</h2>
-      <p>Это сайт футбольной аналитики Казахстанской Премьер-Лиги.</p>
-      <p>
-        Здесь вы найдёте турнирную таблицу, информацию о клубах и свежие
-        новости.
-      </p>
+      <div class="hero">
+        <h2>Добро пожаловать на сайт КПЛ Аналитика</h2>
+        <p>
+          Турнирная таблица, клубы и свежие новости Казахстанской Премьер-Лиги в
+          одном месте.
+        </p>
+      </div>
+
+      <div class="home-grid">
+        <section class="home-block">
+          <h3>Лидеры таблицы</h3>
+          <div class="top-clubs">
+            {{range .TopClubs}}
+            <a href="/club?id={{.ID}}" class="top-club-row">
+              <span class="top-club-name">{{.Name}}</span>
+              <span class="top-club-points">{{.Points}} очков</span>
+            </a>
+            {{end}}
+          </div>
+          <a href="/table" class="btn">Вся таблица →</a>
+        </section>
+
+        <section class="home-block">
+          <h3>Последние новости</h3>
+          <div class="latest-news">
+            {{range .LatestNews}}
+            <a href="/article?id={{.ID}}" class="latest-news-row">
+              <span class="news-date">{{.Date}}</span>
+              <span class="latest-news-title">{{.Title}}</span>
+            </a>
+            {{end}}
+          </div>
+          <a href="/news" class="btn">Все новости →</a>
+        </section>
+      </div>
     </main>
 
     <footer>
-      <p>Проект для колледжа · 2026</p>
+      <p>КПЛ Аналитика · 2026</p>
     </footer>
   </body>
 </html>

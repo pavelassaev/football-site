@@ -7,6 +7,12 @@ import (
 	"strconv"
 )
 
+// HomeData — данные для главной страницы
+type HomeData struct {
+	TopClubs   []Club
+	LatestNews []News
+}
+
 func main() {
 	// Инициализация базы данных
 	initDB()
@@ -16,13 +22,48 @@ func main() {
 
 	// Главная страница
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Если адрес не корневой — показываем 404
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+
+		// Берём всех клубов и оставляем топ-3
+		clubs, err := getClubs()
+		if err != nil {
+			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
+			fmt.Println("Ошибка getClubs:", err)
+			return
+		}
+		topClubs := clubs
+		if len(topClubs) > 3 {
+			topClubs = topClubs[:3]
+		}
+
+		// Берём новости и оставляем 3 свежие
+		newsList, err := getNews()
+		if err != nil {
+			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
+			fmt.Println("Ошибка getNews:", err)
+			return
+		}
+		latestNews := newsList
+		if len(latestNews) > 3 {
+			latestNews = latestNews[:3]
+		}
+
+		data := HomeData{
+			TopClubs:   topClubs,
+			LatestNews: latestNews,
+		}
+
 		tmpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
 			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
-		tmpl.Execute(w, nil)
+		tmpl.Execute(w, data)
 	})
 
 	// Страница турнирной таблицы
