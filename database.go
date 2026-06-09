@@ -7,7 +7,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// Club — структура, описывающая один клуб
 type Club struct {
 	ID       int
 	Name     string
@@ -22,7 +21,6 @@ type Club struct {
 	Points   int
 }
 
-// News — структура, описывающая одну новость
 type News struct {
 	ID      int
 	Title   string
@@ -30,7 +28,6 @@ type News struct {
 	Content string
 }
 
-// Match — структура, описывающая один матч
 type Match struct {
 	ID        int
 	HomeTeam  string
@@ -39,14 +36,19 @@ type Match struct {
 	AwayScore int
 	Date      string
 	Stadium   string
-	Played    bool // сыгран матч или ещё предстоит
-	Price     int  // цена билета в тенге
+	Played    bool
+	Price     int
 }
 
-// db — глобальная переменная для подключения к базе
+// User — структура пользователя
+type User struct {
+	ID       int
+	Username string
+	Password string // здесь хранится хеш пароля, не сам пароль
+}
+
 var db *sql.DB
 
-// initDB открывает базу и создаёт таблицы, если их нет
 func initDB() {
 	var err error
 	db, err = sql.Open("sqlite", "kpl.db")
@@ -106,10 +108,21 @@ func initDB() {
 		return
 	}
 
+	createUsers := `
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT NOT NULL UNIQUE,
+		password TEXT NOT NULL
+	);`
+	_, err = db.Exec(createUsers)
+	if err != nil {
+		fmt.Println("Ошибка создания таблицы users:", err)
+		return
+	}
+
 	fmt.Println("База данных готова")
 }
 
-// getClubs возвращает все клубы, отсортированные по очкам
 func getClubs() ([]Club, error) {
 	rows, err := db.Query("SELECT id, name, city, stadium, played, wins, draws, losses, goals_for, goals_against, points FROM clubs ORDER BY points DESC, (goals_for - goals_against) DESC")
 	if err != nil {
@@ -129,7 +142,6 @@ func getClubs() ([]Club, error) {
 	return clubs, nil
 }
 
-// getClubByID возвращает один клуб по его id
 func getClubByID(id int) (Club, error) {
 	var c Club
 	err := db.QueryRow(
@@ -139,7 +151,6 @@ func getClubByID(id int) (Club, error) {
 	return c, err
 }
 
-// getNews возвращает все новости (свежие сверху)
 func getNews() ([]News, error) {
 	rows, err := db.Query("SELECT id, title, date, content FROM news ORDER BY id DESC")
 	if err != nil {
@@ -159,7 +170,6 @@ func getNews() ([]News, error) {
 	return newsList, nil
 }
 
-// getNewsByID возвращает одну новость по её id
 func getNewsByID(id int) (News, error) {
 	var n News
 	err := db.QueryRow(
@@ -169,7 +179,6 @@ func getNewsByID(id int) (News, error) {
 	return n, err
 }
 
-// getMatches возвращает все матчи
 func getMatches() ([]Match, error) {
 	rows, err := db.Query("SELECT id, home_team, away_team, home_score, away_score, date, stadium, played, price FROM matches ORDER BY id")
 	if err != nil {
@@ -191,7 +200,6 @@ func getMatches() ([]Match, error) {
 	return matches, nil
 }
 
-// getMatchByID возвращает один матч по его id
 func getMatchByID(id int) (Match, error) {
 	var m Match
 	var playedInt int
@@ -201,4 +209,17 @@ func getMatchByID(id int) (Match, error) {
 	).Scan(&m.ID, &m.HomeTeam, &m.AwayTeam, &m.HomeScore, &m.AwayScore, &m.Date, &m.Stadium, &playedInt, &m.Price)
 	m.Played = playedInt == 1
 	return m, err
+}
+
+// createUser добавляет нового пользователя (пароль уже хеширован)
+func createUser(username, passwordHash string) error {
+	_, err := db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", username, passwordHash)
+	return err
+}
+
+// getUserByUsername находит пользователя по логину
+func getUserByUsername(username string) (User, error) {
+	var u User
+	err := db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", username).Scan(&u.ID, &u.Username, &u.Password)
+	return u, err
 }

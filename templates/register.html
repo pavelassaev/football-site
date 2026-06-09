@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>КПЛ Аналитика — Регистрация</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>⚽ КПЛ Аналитика</h1>
+      <nav>
+        <a href="/" class="nav-home">Главная</a>
+        <a href="/table" class="nav-table">Таблица</a>
+        <a href="/clubs" class="nav-clubs">Клубы</a>
+        <a href="/matches" class="nav-matches">Матчи</a>
+        <a href="/news" class="nav-news">Новости</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="auth-box">
+        <h2>Регистрация</h2>
+        {{if .Error}}
+        <p class="auth-error">{{.Error}}</p>
+        {{end}}
+        <form method="POST" action="/register">
+          <label>Логин</label>
+          <input type="text" name="username" required />
+          <label>Пароль</label>
+          <input type="password" name="password" required />
+          <button type="submit" class="btn">Зарегистрироваться</button>
+        </form>
+        <p class="auth-switch">Уже есть аккаунт? <a href="/login">Войти</a></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>КПЛ Аналитика · 2026</p>
+    </footer>
+  </body>
+</html>

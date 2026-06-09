@@ -15,6 +15,12 @@
         <a href="/clubs" class="nav-clubs">Клубы</a>
         <a href="/matches" class="nav-matches">Матчи</a>
         <a href="/news" class="nav-news">Новости</a>
+        {{if .Username}}
+        <span class="nav-user">{{.Username}}</span>
+        <a href="/logout" class="nav-auth">Выйти</a>
+        {{else}}
+        <a href="/login" class="nav-auth">Войти</a>
+        {{end}}
       </nav>
     </header>
 

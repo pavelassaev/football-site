@@ -7,10 +7,10 @@ import (
 	"strconv"
 )
 
-// HomeData — данные для главной страницы
 type HomeData struct {
 	TopClubs   []Club
 	LatestNews []News
+	Username   string
 }
 
 func main() {
@@ -20,7 +20,6 @@ func main() {
 	seedMatches()
 	defer db.Close()
 
-	// Главная страница
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -30,7 +29,6 @@ func main() {
 		clubs, err := getClubs()
 		if err != nil {
 			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
-			fmt.Println("Ошибка getClubs:", err)
 			return
 		}
 		topClubs := clubs
@@ -41,7 +39,6 @@ func main() {
 		newsList, err := getNews()
 		if err != nil {
 			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
-			fmt.Println("Ошибка getNews:", err)
 			return
 		}
 		latestNews := newsList
@@ -49,23 +46,20 @@ func main() {
 			latestNews = latestNews[:3]
 		}
 
-		data := HomeData{TopClubs: topClubs, LatestNews: latestNews}
+		data := HomeData{TopClubs: topClubs, LatestNews: latestNews, Username: getCurrentUser(r)}
 
 		tmpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, data)
 	})
 
-	// Турнирная таблица
 	http.HandleFunc("/table", func(w http.ResponseWriter, r *http.Request) {
 		clubs, err := getClubs()
 		if err != nil {
 			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
-			fmt.Println("Ошибка getClubs:", err)
 			return
 		}
 		funcMap := template.FuncMap{
@@ -75,30 +69,25 @@ func main() {
 		tmpl, err := template.New("table.html").Funcs(funcMap).ParseFiles("templates/table.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, clubs)
 	})
 
-	// Список клубов
 	http.HandleFunc("/clubs", func(w http.ResponseWriter, r *http.Request) {
 		clubs, err := getClubs()
 		if err != nil {
 			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
-			fmt.Println("Ошибка getClubs:", err)
 			return
 		}
 		tmpl, err := template.ParseFiles("templates/clubs.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, clubs)
 	})
 
-	// Один клуб
 	http.HandleFunc("/club", func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idStr)
@@ -109,36 +98,30 @@ func main() {
 		club, err := getClubByID(id)
 		if err != nil {
 			http.Error(w, "Клуб не найден", http.StatusNotFound)
-			fmt.Println("Ошибка getClubByID:", err)
 			return
 		}
 		tmpl, err := template.ParseFiles("templates/club.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, club)
 	})
 
-	// Список новостей
 	http.HandleFunc("/news", func(w http.ResponseWriter, r *http.Request) {
 		newsList, err := getNews()
 		if err != nil {
 			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
-			fmt.Println("Ошибка getNews:", err)
 			return
 		}
 		tmpl, err := template.ParseFiles("templates/news.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, newsList)
 	})
 
-	// Одна новость
 	http.HandleFunc("/article", func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idStr)
@@ -149,36 +132,30 @@ func main() {
 		article, err := getNewsByID(id)
 		if err != nil {
 			http.Error(w, "Новость не найдена", http.StatusNotFound)
-			fmt.Println("Ошибка getNewsByID:", err)
 			return
 		}
 		tmpl, err := template.ParseFiles("templates/article.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, article)
 	})
 
-	// Список матчей
 	http.HandleFunc("/matches", func(w http.ResponseWriter, r *http.Request) {
 		matches, err := getMatches()
 		if err != nil {
 			http.Error(w, "Ошибка получения данных", http.StatusInternalServerError)
-			fmt.Println("Ошибка getMatches:", err)
 			return
 		}
 		tmpl, err := template.ParseFiles("templates/matches.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, matches)
 	})
 
-	// Один матч
 	http.HandleFunc("/match", func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idStr)
@@ -189,22 +166,102 @@ func main() {
 		match, err := getMatchByID(id)
 		if err != nil {
 			http.Error(w, "Матч не найден", http.StatusNotFound)
-			fmt.Println("Ошибка getMatchByID:", err)
 			return
 		}
 		tmpl, err := template.ParseFiles("templates/match.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
-			fmt.Println("Ошибка шаблона:", err)
 			return
 		}
 		tmpl.Execute(w, match)
 	})
 
-	// Статические файлы
+	// Регистрация
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			username := r.FormValue("username")
+			password := r.FormValue("password")
+
+			if username == "" || password == "" {
+				renderAuth(w, "register.html", "Заполните все поля")
+				return
+			}
+
+			// Проверяем, не занят ли логин
+			_, err := getUserByUsername(username)
+			if err == nil {
+				renderAuth(w, "register.html", "Этот логин уже занят")
+				return
+			}
+
+			hash, err := hashPassword(password)
+			if err != nil {
+				renderAuth(w, "register.html", "Ошibка при регистрации")
+				return
+			}
+
+			err = createUser(username, hash)
+			if err != nil {
+				renderAuth(w, "register.html", "Не удалось создать пользователя")
+				return
+			}
+
+			// Сразу входим после регистрации
+			loginUser(w, r, username)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		renderAuth(w, "register.html", "")
+	})
+
+	// Вход
+	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			username := r.FormValue("username")
+			password := r.FormValue("password")
+
+			user, err := getUserByUsername(username)
+			if err != nil {
+				renderAuth(w, "login.html", "Неверный логин или пароль")
+				return
+			}
+
+			if !checkPassword(password, user.Password) {
+				renderAuth(w, "login.html", "Неверный логин или пароль")
+				return
+			}
+
+			loginUser(w, r, username)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		renderAuth(w, "login.html", "")
+	})
+
+	// Выход
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		logoutUser(w, r)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	fmt.Println("Сервер запущен на http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
+}
+
+// AuthData — данные для страниц входа/регистрации
+type AuthData struct {
+	Error string
+}
+
+// renderAuth показывает страницу входа или регистрации с возможной ошибкой
+func renderAuth(w http.ResponseWriter, page, errMsg string) {
+	tmpl, err := template.ParseFiles("templates/" + page)
+	if err != nil {
+		http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, AuthData{Error: errMsg})
 }
