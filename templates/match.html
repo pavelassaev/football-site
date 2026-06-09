@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>КПЛ Аналитика — {{.HomeTeam}} – {{.AwayTeam}}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body class="page-matches">
+    <header>
+      <h1>⚽ КПЛ Аналитика</h1>
+      <nav>
+        <a href="/" class="nav-home">Главная</a>
+        <a href="/table" class="nav-table">Таблица</a>
+        <a href="/clubs" class="nav-clubs">Клубы</a>
+        <a href="/matches" class="nav-matches">Матчи</a>
+        <a href="/news" class="nav-news">Новости</a>
+      </nav>
+    </header>
+
+    <main>
+      <button onclick="history.back()" class="btn btn-back">← Назад</button>
+
+      <div class="match-detail">
+        <span class="match-date">{{.Date}}</span>
+        <div class="match-detail-teams">
+          <span class="match-detail-team">{{.HomeTeam}}</span>
+          {{if .Played}}
+          <span class="match-detail-score"
+            >{{.HomeScore}} : {{.AwayScore}}</span
+          >
+          {{else}}
+          <span class="match-detail-score">VS</span>
+          {{end}}
+          <span class="match-detail-team">{{.AwayTeam}}</span>
+        </div>
+        <p class="match-stadium">Стадион: {{.Stadium}}</p>
+
+        {{if .Played}}
+        <p class="match-result-label">Матч завершён</p>
+        {{else}}
+        <div class="ticket-block">
+          <p class="ticket-price">Цена билета: {{.Price}} ₸</p>
+          <button class="btn">Купить билет</button>
+        </div>
+        {{end}}
+      </div>
+    </main>
+
+    <footer>
+      <p>КПЛ Аналитика · 2026</p>
+    </footer>
+  </body>
+</html>

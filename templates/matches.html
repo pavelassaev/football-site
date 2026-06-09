@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>КПЛ Аналитика — Новости</title>
+    <title>КПЛ Аналитика — Матчи</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
-  <body class="page-news">
+  <body class="page-matches">
     <header>
       <h1>⚽ КПЛ Аналитика</h1>
       <nav>
@@ -20,12 +20,25 @@
 
     <main>
       <button onclick="history.back()" class="btn btn-back">← Назад</button>
-      <h2>Новости лиги</h2>
-      <div class="news-list">
+      <h2>Матчи лиги</h2>
+      <div class="matches-list">
         {{range .}}
-        <a href="/article?id={{.ID}}" class="news-card">
-          <span class="news-date">{{.Date}}</span>
-          <h3>{{.Title}}</h3>
+        <a href="/match?id={{.ID}}" class="match-card">
+          <span class="match-date">{{.Date}}</span>
+          <div class="match-teams">
+            <span class="match-team">{{.HomeTeam}}</span>
+            {{if .Played}}
+            <span class="match-score">{{.HomeScore}} : {{.AwayScore}}</span>
+            {{else}}
+            <span class="match-vs">—</span>
+            {{end}}
+            <span class="match-team">{{.AwayTeam}}</span>
+          </div>
+          {{if .Played}}
+          <span class="match-status played">Завершён</span>
+          {{else}}
+          <span class="match-status upcoming">Билеты от {{.Price}} ₸</span>
+          {{end}}
         </a>
         {{end}}
       </div>
