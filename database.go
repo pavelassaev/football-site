@@ -40,11 +40,20 @@ type Match struct {
 	Price     int
 }
 
-// User — структура пользователя
 type User struct {
 	ID       int
 	Username string
-	Password string // здесь хранится хеш пароля, не сам пароль
+	Password string
+}
+
+// Ticket — купленный билет с информацией о матче
+type Ticket struct {
+	ID       int
+	HomeTeam string
+	AwayTeam string
+	Date     string
+	Stadium  string
+	Price    int
 }
 
 var db *sql.DB
@@ -117,6 +126,18 @@ func initDB() {
 	_, err = db.Exec(createUsers)
 	if err != nil {
 		fmt.Println("Ошибка создания таблицы users:", err)
+		return
+	}
+
+	createTickets := `
+	CREATE TABLE IF NOT EXISTS tickets (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER NOT NULL,
+		match_id INTEGER NOT NULL
+	);`
+	_, err = db.Exec(createTickets)
+	if err != nil {
+		fmt.Println("Ошибка создания таблицы tickets:", err)
 		return
 	}
 
@@ -211,15 +232,46 @@ func getMatchByID(id int) (Match, error) {
 	return m, err
 }
 
-// createUser добавляет нового пользователя (пароль уже хеширован)
 func createUser(username, passwordHash string) error {
 	_, err := db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", username, passwordHash)
 	return err
 }
 
-// getUserByUsername находит пользователя по логину
 func getUserByUsername(username string) (User, error) {
 	var u User
 	err := db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", username).Scan(&u.ID, &u.Username, &u.Password)
 	return u, err
+}
+
+// buyTicket покупает билет: связывает пользователя и матч
+func buyTicket(userID, matchID int) error {
+	_, err := db.Exec("INSERT INTO tickets (user_id, match_id) VALUES (?, ?)", userID, matchID)
+	return err
+}
+
+// getUserTickets возвращает все билеты пользователя с данными матчей
+func getUserTickets(userID int) ([]Ticket, error) {
+	rows, err := db.Query(`
+		SELECT tickets.id, matches.home_team, matches.away_team, matches.date, matches.stadium, matches.price
+		FROM tickets
+		JOIN matches ON tickets.match_id = matches.id
+		WHERE tickets.user_id = ?
+		ORDER BY tickets.id DESC`,
+		userID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tickets []Ticket
+	for rows.Next() {
+		var t Ticket
+		err := rows.Scan(&t.ID, &t.HomeTeam, &t.AwayTeam, &t.Date, &t.Stadium, &t.Price)
+		if err != nil {
+			return nil, err
+		}
+		tickets = append(tickets, t)
+	}
+	return tickets, nil
 }

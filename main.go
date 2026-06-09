@@ -13,6 +13,12 @@ type HomeData struct {
 	Username   string
 }
 
+// MatchPageData — данные для страницы матча (матч + вошедший пользователь)
+type MatchPageData struct {
+	Match    Match
+	Username string
+}
+
 func main() {
 	initDB()
 	seedClubs()
@@ -168,15 +174,80 @@ func main() {
 			http.Error(w, "Матч не найден", http.StatusNotFound)
 			return
 		}
+		data := MatchPageData{Match: match, Username: getCurrentUser(r)}
 		tmpl, err := template.ParseFiles("templates/match.html")
 		if err != nil {
 			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
 			return
 		}
-		tmpl.Execute(w, match)
+		tmpl.Execute(w, data)
 	})
 
-	// Регистрация
+	// Покупка билета
+	http.HandleFunc("/buy", func(w http.ResponseWriter, r *http.Request) {
+		username := getCurrentUser(r)
+		// Если не вошёл — отправляем на страницу входа
+		if username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		idStr := r.URL.Query().Get("id")
+		matchID, err := strconv.Atoi(idStr)
+		if err != nil {
+			http.Error(w, "Неверный id матча", http.StatusBadRequest)
+			return
+		}
+
+		user, err := getUserByUsername(username)
+		if err != nil {
+			http.Error(w, "Ошибка пользователя", http.StatusInternalServerError)
+			return
+		}
+
+		err = buyTicket(user.ID, matchID)
+		if err != nil {
+			http.Error(w, "Ошибка покупки билета", http.StatusInternalServerError)
+			return
+		}
+
+		// После покупки — на страницу "Мои билеты"
+		http.Redirect(w, r, "/tickets", http.StatusSeeOther)
+	})
+
+	// Мои билеты
+	http.HandleFunc("/tickets", func(w http.ResponseWriter, r *http.Request) {
+		username := getCurrentUser(r)
+		if username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		user, err := getUserByUsername(username)
+		if err != nil {
+			http.Error(w, "Ошибка пользователя", http.StatusInternalServerError)
+			return
+		}
+
+		tickets, err := getUserTickets(user.ID)
+		if err != nil {
+			http.Error(w, "Ошибка получения билетов", http.StatusInternalServerError)
+			return
+		}
+
+		data := struct {
+			Tickets  []Ticket
+			Username string
+		}{Tickets: tickets, Username: username}
+
+		tmpl, err := template.ParseFiles("templates/tickets.html")
+		if err != nil {
+			http.Error(w, "Ошибка загрузки страницы", http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, data)
+	})
+
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			username := r.FormValue("username")
@@ -187,7 +258,6 @@ func main() {
 				return
 			}
 
-			// Проверяем, не занят ли логин
 			_, err := getUserByUsername(username)
 			if err == nil {
 				renderAuth(w, "register.html", "Этот логин уже занят")
@@ -196,7 +266,7 @@ func main() {
 
 			hash, err := hashPassword(password)
 			if err != nil {
-				renderAuth(w, "register.html", "Ошibка при регистрации")
+				renderAuth(w, "register.html", "Ошибка при регистрации")
 				return
 			}
 
@@ -206,7 +276,6 @@ func main() {
 				return
 			}
 
-			// Сразу входим после регистрации
 			loginUser(w, r, username)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
@@ -214,7 +283,6 @@ func main() {
 		renderAuth(w, "register.html", "")
 	})
 
-	// Вход
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			username := r.FormValue("username")
@@ -238,7 +306,6 @@ func main() {
 		renderAuth(w, "login.html", "")
 	})
 
-	// Выход
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		logoutUser(w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -251,12 +318,10 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-// AuthData — данные для страниц входа/регистрации
 type AuthData struct {
 	Error string
 }
 
-// renderAuth показывает страницу входа или регистрации с возможной ошибкой
 func renderAuth(w http.ResponseWriter, page, errMsg string) {
 	tmpl, err := template.ParseFiles("templates/" + page)
 	if err != nil {

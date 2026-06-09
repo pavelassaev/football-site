@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>КПЛ Аналитика — {{.HomeTeam}} – {{.AwayTeam}}</title>
+    <title>КПЛ Аналитика — {{.Match.HomeTeam}} – {{.Match.AwayTeam}}</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body class="page-matches">
@@ -15,6 +15,12 @@
         <a href="/clubs" class="nav-clubs">Клубы</a>
         <a href="/matches" class="nav-matches">Матчи</a>
         <a href="/news" class="nav-news">Новости</a>
+        {{if .Username}}
+        <a href="/tickets" class="nav-auth">Мои билеты</a>
+        <a href="/logout" class="nav-auth">Выйти</a>
+        {{else}}
+        <a href="/login" class="nav-auth">Войти</a>
+        {{end}}
       </nav>
     </header>
 
@@ -22,26 +28,30 @@
       <button onclick="history.back()" class="btn btn-back">← Назад</button>
 
       <div class="match-detail">
-        <span class="match-date">{{.Date}}</span>
+        <span class="match-date">{{.Match.Date}}</span>
         <div class="match-detail-teams">
-          <span class="match-detail-team">{{.HomeTeam}}</span>
-          {{if .Played}}
+          <span class="match-detail-team">{{.Match.HomeTeam}}</span>
+          {{if .Match.Played}}
           <span class="match-detail-score"
-            >{{.HomeScore}} : {{.AwayScore}}</span
+            >{{.Match.HomeScore}} : {{.Match.AwayScore}}</span
           >
           {{else}}
           <span class="match-detail-score">VS</span>
           {{end}}
-          <span class="match-detail-team">{{.AwayTeam}}</span>
+          <span class="match-detail-team">{{.Match.AwayTeam}}</span>
         </div>
-        <p class="match-stadium">Стадион: {{.Stadium}}</p>
+        <p class="match-stadium">Стадион: {{.Match.Stadium}}</p>
 
-        {{if .Played}}
+        {{if .Match.Played}}
         <p class="match-result-label">Матч завершён</p>
         {{else}}
         <div class="ticket-block">
-          <p class="ticket-price">Цена билета: {{.Price}} ₸</p>
-          <button class="btn">Купить билет</button>
+          <p class="ticket-price">Цена билета: {{.Match.Price}} ₸</p>
+          {{if .Username}}
+          <a href="/buy?id={{.Match.ID}}" class="btn">Купить билет</a>
+          {{else}}
+          <a href="/login" class="btn">Войдите, чтобы купить билет</a>
+          {{end}}
         </div>
         {{end}}
       </div>

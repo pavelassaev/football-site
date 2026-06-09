@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>КПЛ Аналитика — Мои билеты</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>⚽ КПЛ Аналитика</h1>
+      <nav>
+        <a href="/" class="nav-home">Главная</a>
+        <a href="/table" class="nav-table">Таблица</a>
+        <a href="/clubs" class="nav-clubs">Клубы</a>
+        <a href="/matches" class="nav-matches">Матчи</a>
+        <a href="/news" class="nav-news">Новости</a>
+        <a href="/tickets" class="nav-auth">Мои билеты</a>
+        <a href="/logout" class="nav-auth">Выйти</a>
+      </nav>
+    </header>
+
+    <main>
+      <button onclick="history.back()" class="btn btn-back">← Назад</button>
+      <h2>Мои билеты</h2>
+
+      {{if .Tickets}}
+      <div class="tickets-list">
+        {{range .Tickets}}
+        <div class="ticket-card">
+          <div class="ticket-info">
+            <span class="ticket-teams">{{.HomeTeam}} — {{.AwayTeam}}</span>
+            <span class="ticket-meta">{{.Date}} · {{.Stadium}}</span>
+          </div>
+          <span class="ticket-card-price">{{.Price}} ₸</span>
+        </div>
+        {{end}}
+      </div>
+      {{else}}
+      <p class="no-tickets">
+        У вас пока нет билетов. Перейдите в раздел <a href="/matches">Матчи</a>,
+        чтобы купить.
+      </p>
+      {{end}}
+    </main>
+
+    <footer>
+      <p>КПЛ Аналитика · 2026</p>
+    </footer>
+  </body>
+</html>
